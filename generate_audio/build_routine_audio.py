@@ -1,19 +1,12 @@
-import random
-import time
 from tqdm import tqdm
-from playsound import playsound
-from boxing_moves import attack, defense, actions, silence
 from pydub import AudioSegment
-from pydub.playback import play
-import os
+from boxing_move import BoxingMove
 from pydub.utils import which
+import os
+
+from constants import BoxingMovesConstants, FileLocationConstants
+
 AudioSegment.converter = which("ffmpeg")
-# Meme Generator
-from os import listdir
-from os.path import isfile, join
-base_dir = r"c:\Users\Caleb\Desktop\Projects\Boxing Program"
-mypath = "./Audio Resources/Boxing Audio"
-onlyfiles = [f"{mypath}/{f}" for f in listdir(mypath) if isfile(join(mypath, f))]
 
 def concatenate_audio_pydub(audio_clip_paths, output_path, verbose=1):
     """
@@ -46,20 +39,16 @@ def concatenate_audio_pydub(audio_clip_paths, output_path, verbose=1):
         print(f"Exporting resulting audio file to {output_path}")
     final_clip.export(output_path, format=final_clip_extension)
 
-instructions = 50
-files = [f"{mypath}/Start.mp3"]
-for x in range(0, instructions):
-    attackrand = random.randint(0, len(attack)-1)
-    chosen_attack = attack[attackrand]
-    defenserand = random.randint(0, len(defense)-1)
-    chosen_defense = defense[defenserand]
-    print(f"{attack[attackrand]}, then {defense[defenserand]}")
-    files.append(f"{mypath}/{chosen_attack}.mp3")
-    files.append(f"{mypath}/{silence[0]}.mp3")
-    files.append(f"{mypath}/{chosen_defense}.mp3")
-    files.append(f"{mypath}/{silence[1]}.mp3")
+def build_instruction_set_audio(routine, has_padding=False):
+    
+    instruction_files = []
+    for instruction in routine:
+        if type(instruction) is BoxingMove:
+            instruction_files.append(f"{FileLocationConstants.AUDIO_SRC_PATH}/{instruction.move}.mp3")
+        else:
+            instruction_files.append(f"{FileLocationConstants.AUDIO_SRC_PATH}/{instruction}.mp3")
+            
+        if has_padding:
+            instruction_files.append(f"{FileLocationConstants.AUDIO_SRC_PATH}/{BoxingMovesConstants.SILENCE_OPTIONS[1]}.mp3")
 
-
-files.append(f"{mypath}/Stop.mp3")
-
-concatenate_audio_pydub(files, "mash2.mp3")
+    concatenate_audio_pydub(instruction_files, "./output/routine.mp3")
