@@ -8,3 +8,9 @@ The current itteration is a CLI interface, to run simply:
 ```
 python shadow_boxer_menu.py
 ```
+
+## Possible todo:
+[] add better weighting using random.choices
+[] add combos to make a more intuitive routine
+[] add better buffers
+[] background music to routine tracks?
